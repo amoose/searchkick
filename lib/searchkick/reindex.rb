@@ -230,6 +230,18 @@ module Searchkick
           settings[:analysis][:analyzer][:default_index][:filter] << "searchkick_synonym"
         end
 
+        # wordnet synonyms http://wordnet.princeton.edu/wordnet/download/current-version/
+        wordnet_synonyms = options[:wordnet_synonyms]
+        if wordnet_synonyms
+          settings[:analysis][:analyzer][:default_index][:filter].push "wordnet_synonyms"
+          settings[:analysis][:analyzer][:searchkick_search][:filter].push "wordnet_synonyms"
+
+          settings[:analysis][:filter][:wordnet_synonyms] = {
+            :type => 'synonym',
+            :synonyms_path => wordnet_synonyms
+          }
+        end
+
         if options[:special_characters] == false
           settings[:analysis][:analyzer].each do |analyzer, analyzer_settings|
             analyzer_settings[:filter].reject!{|f| f == "asciifolding" }
